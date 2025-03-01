@@ -1,0 +1,112 @@
+.footer {
+  width: 100%;
+  background-color: #fff;
+  padding: 20px 0;
+  border-top: 1px solid #e9ecef;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.topSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 12px;
+}
+
+.logoText {
+  font-size: 18px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.copyright {
+  color: #888;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+
+.links a {
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.2s;
+}
+
+.links a:hover {
+  color: #1e88e5;
+  text-decoration: underline;
+}
+
+.mobileLogoSection {
+  display: none;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.papagoText {
+  color: #e7e3e3;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .footer {
+    border: 0;
+  }
+
+  .topSection {
+    flex-direction: column;
+    margin-top: 70px;
+    gap: 15px;
+  }
+  
+  .logoSection {
+    display: none;
+  }
+
+  .logoWrapper {
+    display: none;
+  }
+  
+  .mobileLogoSection {
+    display: block;
+    order: 1;
+  }
+  
+  .links {
+    display: none;
+  }
+}
