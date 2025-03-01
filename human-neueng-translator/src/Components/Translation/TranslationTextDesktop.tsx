@@ -87,7 +87,7 @@ const TranslationTextDesktop = () => {
         <div className={styles.translationBox} ref={leftBoxRef}>
           <div className={styles.languageSelector}>
             <span className={styles.language}>휴먼느엥체</span>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
               <line x1="2" y1="12" x2="20" y2="12"></line>
               <polyline points="14 6 20 12 14 18"></polyline>
             </svg>

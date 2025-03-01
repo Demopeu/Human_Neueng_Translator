@@ -10,12 +10,12 @@
   align-items: center;
   z-index: 1000;
 }
-.modalOverlay:focus:focus-visible{
+.modalOverlay:focus:focus-visible {
   outline: none;
 }
 
 .precautionsModal {
-  width: 450px;
+  width: 500px;
   max-width: 90%;
   background-color: white;
   border-radius: 10px;
@@ -57,17 +57,19 @@
   padding: 1.5rem;
 }
 
-.modalContent ul {
+.modalContent ul,
+.modalContent ol {
   margin: 0;
   padding-left: 1.5rem;
 }
 
 .modalContent li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
   color: #333;
   line-height: 1.5;
-}
-
-.modalContent li:last-child {
-  margin-bottom: 0;
+  /* 단어 단위(띄어쓰기 기준)로 줄바꿈 처리 */
+  word-break: keep-all;
+  line-break: strict;
+  white-space: normal;
+  overflow-wrap: break-word;
 }
