@@ -67,6 +67,13 @@
   transition: height 0.2s ease;
 }
 
+.textareaWrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
+}
+
 .textarea {
   font-family: "Noto Sans", "Noto Sans JP", "Noto Sans KR", Helvetica, "Microsoft YaHei", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Dotum, 돋움, sans-serif;
   width: 100%;
@@ -82,12 +89,40 @@
   overflow-y: hidden;
   transition: font-size 0.2s, height 0.2s;
   background: transparent;
+  padding-right: 40px;
 }
 
 .textarea::placeholder {
   color: #aaa;
   font-weight: 500;
   font-size: 24px;
+}
+
+.textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.clearButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #888;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: normal;
+}
+
+.clearButton:hover {
+  color: #FFA7B7;
 }
 
 .characterCount {

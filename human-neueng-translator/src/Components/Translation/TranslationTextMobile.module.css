@@ -57,15 +57,27 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  min-height: 120px; /* 여기를 다시 120px로 변경 */
+  min-height: 160px; /* 120px(textarea) + 40px(toolbar) */
   height: auto;
-  transition: all 0.2s;
+  transition: height 0.1s ease; /* 트랜지션 시간 단축 */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.textareaWrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .textarea {
   width: 100%;
   min-height: 120px;
+  height: auto;
+  overflow-y: hidden;
   padding: 16px;
+  padding-right: 40px;
   font-size: 20px;
   font-weight: 600;
   color: #333;
@@ -73,13 +85,42 @@
   resize: none;
   outline: none;
   line-height: 1.5;
-  transition: font-size 0.2s, height 0.2s;
+  transition: font-size 0.15s ease, height 0.15s ease; /* 트랜지션 시간 단축 */
+  box-sizing: border-box;
   font-family: "Noto Sans", "Noto Sans JP", "Noto Sans KR", Helvetica, "Microsoft YaHei", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Dotum, 돋움, sans-serif;
 }
 
 .textarea::placeholder {
   color: #aaa;
   font-weight: 400;
+}
+
+.textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.clearButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #888;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: normal;
+  z-index: 10;
+}
+
+.clearButton:hover {
+  color: #FFA7B7;
 }
 
 .characterCount {
@@ -208,6 +249,7 @@
   display: flex;
   flex-direction: column;
   border-top: 1px solid #f0f0f0;
+  margin-top: 15px;
 }
 
 .resultText {

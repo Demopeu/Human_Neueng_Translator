@@ -1,10 +1,21 @@
-import { useState, ChangeEvent, useRef, useEffect } from 'react';
+import { useRef, useEffect, ChangeEvent, useCallback, useLayoutEffect } from 'react';
 import styles from './TranslationTextDesktop.module.css';
+import { SharedTranslationState } from './TranslationText';
 
-const TranslationTextDesktop = () => {
-  const [inputText, setInputText] = useState('');
-  const [characterCount, setCharacterCount] = useState(0);
-  const [fontSize, setFontSize] = useState(20); // 초기 폰트 크기 20px
+interface TranslationTextDesktopProps {
+  sharedState: SharedTranslationState;
+}
+
+const TranslationTextDesktop = ({ sharedState }: TranslationTextDesktopProps) => {
+  const { 
+    inputText, 
+    setInputText, 
+    characterCount, 
+    setCharacterCount, 
+    fontSize, 
+    setFontSize 
+  } = sharedState;
+  
   const maxCharacters = 1000;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const textInputAreaRef = useRef<HTMLDivElement>(null);
@@ -19,59 +30,135 @@ const TranslationTextDesktop = () => {
     adjustFontSize(text);
   };
 
-  const adjustFontSize = (text: string) => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
+  const clearText = () => {
+    setInputText('');
+    setCharacterCount(0);
     
-    // 기본 폰트 크기로 시작
-    let newFontSize = 30;
+    // 폰트 크기 원래대로 복원
+    setFontSize(30);
     
-    // 텍스트가 한 줄 넘어갔을 때 19px로 줄임
-    if (text.length > 27) {
-      newFontSize = 25;
+    // 높이 초기화 - 명확하게 설정
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '160px';
     }
     
-    // 텍스트가 더 길어졌을 때 18px로 줄임
-    if (text.length > 60) {
-      newFontSize = 20;
-    }
-    
-    // 폰트 크기 업데이트
-    setFontSize(newFontSize);
-    
-    // 텍스트에리어 높이 자동 조절
-    textarea.style.height = 'auto';
-    const scrollHeight = textarea.scrollHeight;
-    textarea.style.height = `${scrollHeight}px`;
-    
-    // 부모 컨테이너(textInputArea)의 높이도 자동 조절
+    // 부모 컨테이너 높이 초기화
     if (textInputAreaRef.current) {
-      const textInputArea = textInputAreaRef.current;
-      textInputArea.style.height = 'auto';
-      const minHeight = 200;
-      const newHeight = Math.max(minHeight, scrollHeight + 40); // 패딩 포함
-      textInputArea.style.height = `${newHeight}px`;
-      
-      // 왼쪽 translationBox 높이만 자동 조절
-      if (leftBoxRef.current) {
-        const translationBox = leftBoxRef.current;
-        // 언어 선택기 높이 + textInputArea 높이 + 툴바 높이
-        const languageSelectorHeight = 56; // 패딩 포함한 높이
-        const toolsContainerHeight = 64;
-        const totalHeight = languageSelectorHeight + newHeight + toolsContainerHeight;
-        translationBox.style.height = `${totalHeight}px`;
-      }
+      textInputAreaRef.current.style.height = '200px';
+    }
+    
+    // 왼쪽 박스 전체 높이 초기화
+    if (leftBoxRef.current) {
+      // 언어 선택기 높이(56px) + 기본 텍스트영역 높이(200px) + 툴 컨테이너 높이(64px)
+      leftBoxRef.current.style.height = '320px'; // 56 + 200 + 64
+    }
+    
+    // 포커스 설정
+    if (textareaRef.current) {
+      textareaRef.current.focus();
     }
   };
 
-  // 컴포넌트 마운트 시 실행
-  useEffect(() => {
+  // adjustFontSize 함수 개선 - setTimeout 제거
+  const adjustFontSize = useCallback((text: string) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    
+    // 기본 폰트 크기 설정
+    let newFontSize = 30;
+    if (text.length > 27) newFontSize = 24;
+    if (text.length > 60) newFontSize = 20;
+    setFontSize(newFontSize);
+    
+    // 최소 높이 설정
+    const minHeight = 160;
+    
+    // 정확한 높이 계산을 위한 초기화
+    textarea.style.height = 'auto';
+    
+    // scrollHeight를 통해 콘텐츠에 맞는 높이 계산
+    const scrollHeight = Math.max(minHeight, textarea.scrollHeight);
+    textarea.style.height = `${scrollHeight}px`;
+    
+    // 부모 컨테이너 높이 조정
+    if (textInputAreaRef.current) {
+      textInputAreaRef.current.style.height = `${scrollHeight + 40}px`; // 여백 추가
+    }
+    
+    // 왼쪽 박스 전체 높이 조정 (필요한 경우)
+    if (leftBoxRef.current) {
+      // 언어 선택기 높이(56px) + 텍스트영역 높이 + 툴 컨테이너 높이(64px)
+      const totalHeight = 56 + (scrollHeight + 40) + 64;
+      leftBoxRef.current.style.height = `${totalHeight}px`;
+    }
+  }, [setFontSize]);
+
+  // 리사이즈 처리 함수 추가
+  const handleResize = useCallback(() => {
+    if (inputText.length > 0) {
+      adjustFontSize(inputText);
+    } else {
+      // 텍스트가 없을 때 높이 초기화
+      if (textareaRef.current) {
+        textareaRef.current.style.height = '160px';
+      }
+      if (textInputAreaRef.current) {
+        textInputAreaRef.current.style.height = '200px';
+      }
+      if (leftBoxRef.current) {
+        leftBoxRef.current.style.height = '320px'; // 56 + 200 + 64
+      }
+    }
+  }, [inputText, adjustFontSize]);
+
+  // 컴포넌트 마운트 및 텍스트/폰트 변경 시 실행하는 useLayoutEffect
+  useLayoutEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.fontSize = `${fontSize}px`;
+      
+      if (inputText.length > 0) {
+        // 레이아웃 변경 전에 높이 조정
+        adjustFontSize(inputText);
+      } else {
+        // 텍스트가 없을 때 초기 높이
+        textareaRef.current.style.height = '160px';
+        if (textInputAreaRef.current) {
+          textInputAreaRef.current.style.height = '200px';
+        }
+        if (leftBoxRef.current) {
+          leftBoxRef.current.style.height = '320px'; // 56 + 200 + 64
+        }
+      }
     }
-  }, [fontSize]);
+  }, [fontSize, inputText, adjustFontSize]);
 
-  // 버튼에 대한 툴팁 및 클래스 계산
+  // ResizeObserver 및 window resize 이벤트 설정
+  useEffect(() => {
+    // 브라우저 창 크기 변경 감지
+    window.addEventListener('resize', handleResize);
+    
+    // 컴포넌트가 마운트된 요소의 크기 변경 감지를 위한 ResizeObserver
+    if (textInputAreaRef.current && leftBoxRef.current) {
+      const resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      
+      resizeObserver.observe(textInputAreaRef.current);
+      resizeObserver.observe(leftBoxRef.current);
+      
+      // 클린업 함수
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        resizeObserver.disconnect();
+      };
+    }
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [handleResize]);
+
+  // 기존 버튼 클래스 계산 함수 유지
   const getSpeakButtonClass = () => {
     return `${styles.toolButton} ${inputText.length > 0 ? styles.hasText : ''}`;
   };
@@ -80,6 +167,7 @@ const TranslationTextDesktop = () => {
     return `${styles.toolButton} ${inputText.length > 0 ? styles.hasText : ''}`;
   };
 
+  // 나머지 코드는 기존과 동일하게 유지
   return (
     <div className={styles.translationContainer}>
       <div className={styles.translationLayout}>
@@ -91,20 +179,29 @@ const TranslationTextDesktop = () => {
               <line x1="2" y1="12" x2="20" y2="12"></line>
               <polyline points="14 6 20 12 14 18"></polyline>
             </svg>
-
-
           </div>
           
           <div className={styles.textInputArea} ref={textInputAreaRef}>
-            <textarea
-              ref={textareaRef}
-              placeholder="번역할 내용을 입력하세요"
-              value={inputText}
-              onChange={handleInputChange}
-              maxLength={maxCharacters}
-              className={styles.textarea}
-              style={{ fontSize: `${fontSize}px` }}
-            />
+            <div className={styles.textareaWrapper}>
+              <textarea
+                ref={textareaRef}
+                placeholder="번역할 내용을 입력하세요"
+                value={inputText}
+                onChange={handleInputChange}
+                maxLength={maxCharacters}
+                className={styles.textarea}
+                style={{ fontSize: `${fontSize}px` }}
+              />
+              {inputText.length > 0 && (
+                <button 
+                  className={styles.clearButton} 
+                  onClick={clearText}
+                  aria-label="입력 내용 지우기"
+                >
+                  ×
+                </button>
+              )}
+            </div>
             <div className={styles.characterCount}>
               {characterCount} / {maxCharacters}
             </div>

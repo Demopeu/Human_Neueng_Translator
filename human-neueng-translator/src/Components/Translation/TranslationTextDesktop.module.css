@@ -30,7 +30,8 @@
   background-color: #ffffff;
   min-width: 0;
   position: relative;
-  transition: height 0.2s ease;
+  transition: height 0.15s ease; /* 트랜지션 시간 단축 */
+  box-sizing: border-box;
 }
 
 .translationBox:focus-within {
@@ -60,12 +61,20 @@
   padding: 20px;
   min-height: 200px;
   height: auto;
-  transition: height 0.2s ease;
+  transition: height 0.1s ease; /* 트랜지션 시간 단축 */
+  box-sizing: border-box;
+}
+
+.textareaWrapper {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  width: 100%;
 }
 
 .textarea {
   font-family: "Noto Sans", "Noto Sans JP", "Noto Sans KR", Helvetica, "Microsoft YaHei", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", Dotum, 돋움, sans-serif;
-  width: 100%;
+  flex: 1;
   border: none;
   outline: none;
   resize: none;
@@ -74,10 +83,14 @@
   color: #333;
   line-height: 1.5;
   padding: 0;
+  padding-right: 30px; /* X 버튼을 위한 공간 확보 */
   min-height: 160px;
+  height: auto;
   overflow-y: hidden; /* 스크롤바 숨김 */
-  transition: font-size 0.2s, height 0.2s;
+  transition: font-size 0.15s ease, height 0.15s ease; /* 트랜지션 시간 단축 */
   background: transparent;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .textarea::placeholder {
@@ -95,6 +108,29 @@
   position: absolute;
   bottom: 7px;
   right: 20px;
+}
+
+.clearButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #888;
+  font-size: 24px;
+  line-height: 1;
+  font-weight: normal;
+}
+
+.clearButton:hover {
+  color: #FFA7B7;
 }
 
 .translationOutput {

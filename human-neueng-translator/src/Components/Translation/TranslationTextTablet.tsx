@@ -1,10 +1,21 @@
-import { useState, ChangeEvent, useRef, useEffect } from 'react';
+import { useRef, useEffect, ChangeEvent, useCallback } from 'react';
 import styles from './TranslationTextTablet.module.css';
+import { SharedTranslationState } from './TranslationText';
 
-const TranslationTextTablet = () => {
-  const [inputText, setInputText] = useState('');
-  const [characterCount, setCharacterCount] = useState(0);
-  const [fontSize, setFontSize] = useState(24); // 초기 폰트 크기 24px
+interface TranslationTextTabletProps {
+  sharedState: SharedTranslationState;
+}
+
+const TranslationTextTablet = ({ sharedState }: TranslationTextTabletProps) => {
+  const { 
+    inputText, 
+    setInputText, 
+    characterCount, 
+    setCharacterCount, 
+    fontSize, 
+    setFontSize 
+  } = sharedState;
+  
   const maxCharacters = 1000;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const textInputAreaRef = useRef<HTMLDivElement>(null);
@@ -18,47 +29,72 @@ const TranslationTextTablet = () => {
     adjustFontSize(text);
   };
 
-  const adjustFontSize = (text: string) => {
+  // Add clearText function
+  const clearText = () => {
+    setInputText('');
+    setCharacterCount(0);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+    // Reset font size to original
+    setFontSize(24);
+    
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      const minHeight = 100;
+      textareaRef.current.style.height = `${minHeight}px`;
+    }
+    
+    // Reset input area height
+    if (textInputAreaRef.current) {
+      textInputAreaRef.current.style.height = '150px';
+    }
+  };
+
+  const adjustFontSize = useCallback((text: string) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     
-    // 기본 폰트 크기로 시작
-    let newFontSize = 24;
-    
-    // 텍스트가 한 줄 넘어갔을 때 축소
-    if (text.length > 30) {
-      newFontSize = 22;
-    }
-    
-    // 텍스트가 더 길어졌을 때 더 축소
-    if (text.length > 60) {
-      newFontSize = 20;
-    }
-    
-    // 폰트 크기 업데이트
+    // Basic font size settings
+    let newFontSize = 20;
+    if (text.length > 27) newFontSize = 18;
+    if (text.length > 60) newFontSize = 16;
     setFontSize(newFontSize);
     
-    // 텍스트에리어 높이 자동 조절
-    textarea.style.height = 'auto';
-    const scrollHeight = textarea.scrollHeight;
-    textarea.style.height = `${scrollHeight}px`;
+    // Minimum height setting
+    const minHeight = 120;
     
-    // 부모 컨테이너(textInputArea)의 높이도 자동 조절
-    if (textInputAreaRef.current) {
-      const textInputArea = textInputAreaRef.current;
-      textInputArea.style.height = 'auto';
-      const minHeight = 150;
-      const newHeight = Math.max(minHeight, scrollHeight + 30); // 패딩 포함
-      textInputArea.style.height = `${newHeight}px`;
-    }
-  };
+    // Immediate height adjustment
+    textarea.style.height = `${minHeight}px`;
+    
+    // Use setTimeout to ensure the scrollHeight calculation happens after rendering
+    setTimeout(() => {
+      textarea.style.height = 'auto';
+      const scrollHeight = Math.max(minHeight, textarea.scrollHeight);
+      textarea.style.height = `${scrollHeight}px`;
+      
+      // If there's a parent container that needs height adjustment
+      if (textInputAreaRef.current) {
+        const textInputArea = textInputAreaRef.current;
+        textInputArea.style.height = `${scrollHeight + 40}px`; // Add padding
+      }
+    }, 10);
+  }, [setFontSize]); // Include dependencies for this function
 
   // 컴포넌트 마운트 시 실행
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.fontSize = `${fontSize}px`;
+      
+      // If there's already text, adjust the height immediately
+      if (inputText.length > 0) {
+        adjustFontSize(inputText);
+      } else {
+        textareaRef.current.style.height = '120px'; // Initial height
+      }
     }
-  }, [fontSize]);
+  }, [fontSize, inputText, adjustFontSize]); // Include all dependencies here
 
   // 버튼에 대한 클래스 계산
   const getSpeakButtonClass = () => {
@@ -86,15 +122,26 @@ const TranslationTextTablet = () => {
           </div>
           
           <div className={styles.textInputArea} ref={textInputAreaRef}>
-            <textarea
-              ref={textareaRef}
-              placeholder="번역할 내용을 입력하세요"
-              value={inputText}
-              onChange={handleInputChange}
-              maxLength={maxCharacters}
-              className={styles.textarea}
-              style={{ fontSize: `${fontSize}px` }}
-            />
+            <div className={styles.textareaWrapper}>
+              <textarea
+                ref={textareaRef}
+                placeholder="번역할 내용을 입력하세요"
+                value={inputText}
+                onChange={handleInputChange}
+                maxLength={maxCharacters}
+                className={styles.textarea}
+                style={{ fontSize: `${fontSize}px` }}
+              />
+              {inputText.length > 0 && (
+                <button 
+                  className={styles.clearButton} 
+                  onClick={clearText}
+                  aria-label="입력 내용 지우기"
+                >
+                  ×
+                </button>
+              )}
+            </div>
             <div className={styles.characterCount}>
               {characterCount} / {maxCharacters}
             </div>
