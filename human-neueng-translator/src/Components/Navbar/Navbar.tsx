@@ -96,25 +96,31 @@ function Navbar() {
   return (
     <div ref={navbarRef}>
       <nav className={styles.navbar}>
-        {/* 왼쪽 영역 */}
-        <a href="#">
-          <div className={styles.navLeft}>
+        {/* 왼쪽 영역 - 로고와 pipago 텍스트는 메인 페이지로, 사전은 다른 페이지로 */}
+        <div className={styles.navLeft}>
+          {/* 로고와 pipago 텍스트는 메인 페이지로 연결 */}
+          <a href="/">
             <img 
               src="/pipago.webp" 
               alt="pipago logo" 
               className={styles.logo} 
             />
-            <div className={styles.disappear_box}>
+          </a>
+          <div className={styles.disappear_box}>
+            <a href="/">
               <div className={styles.title}>
-                  <span>p</span>
-                  <span className={styles.iLetter}>i</span>
-                  <span>pago</span>
+                <span>p</span>
+                <span className={styles.iLetter}>i</span>
+                <span>pago</span>
               </div>
-              <span className={styles.divider}>|</span>
+            </a>
+            <span className={styles.divider}>|</span>
+            {/* 사전은 사전 페이지로 연결 */}
+            <a href="/dictionary">
               <span className={styles.subtitle}>사전</span>
-            </div>
+            </a>
           </div>
-        </a>
+        </div>
 
         {/* 오른쪽 영역 - 데스크톱 전용 */}
         {!isSmallScreen && (

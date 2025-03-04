@@ -105,7 +105,7 @@ function Sidemenu({ toggleMenu }: SidemenuProps) {
       
       <div className={styles.premiumSection}>
         <div className={styles.papagoPlusBox}>
-          <span className={styles.papagoPlus}>pipago</span>
+          <span className={styles.papagoPlus}>pipago+</span>
           <span className={styles.premiumDesc}>갓 빨개진 피엔나 입덕용 번역 서비스</span>
         </div>
       </div>

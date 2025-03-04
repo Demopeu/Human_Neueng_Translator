@@ -59,6 +59,17 @@
   text-shadow: 0 0 2px rgba(58, 65, 85, 0.3);
 }
 
+/* 링크 스타일 제거 */
+.navLeft a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 호버 효과 */
+.title:hover, .subtitle:hover {
+  opacity: 0.8;
+}
+
 /* 데스크톱 오른쪽 네비게이션 영역 */
 .desktopNavRight {
   display: flex;

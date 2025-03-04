@@ -116,9 +116,14 @@
 
 .papagoPlus {
   font-weight: 700;
-  color: #3d63ce;
-  font-size: 16px;
   margin-bottom: 4px;
+  font-family: 'Nunito Sans', 'Montserrat', sans-serif; 
+  font-weight: 900;
+  font-size: 18px;
+  background-image: linear-gradient(to right, #f81e1e, #ff8a80);
+  background-clip: text;             /* 표준 속성 */
+  -webkit-background-clip: text;     /* WebKit 기반 브라우저용 */
+  -webkit-text-fill-color: transparent;
 }
 
 .premiumDesc {
